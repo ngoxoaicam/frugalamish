@@ -994,6 +994,13 @@
 @media(max-width:750px){.offers--restored .single-card .price-line del{font-size:15px}.sticky-offer__compare{gap:5px}.sticky-offer__compare del{font-size:11px}.sticky-offer__compare .sticky-offer__price{font-size:21px}}
 @media(max-width:390px){.sticky-offer__compare{display:none}}
 
+
+/* Keep the countdown at the top as the page scrolls, preserving original styling. */
+:root{--countdown-stick-height:55px;--nav-stick-height:85px}
+#campaignBanner.launch-clock{position:sticky!important;top:0!important;z-index:95!important}
+.site-header{top:var(--countdown-stick-height)!important;z-index:90}
+html{scroll-padding-top:calc(var(--countdown-stick-height) + var(--nav-stick-height) + 14px)}
+@media(max-width:750px){:root{--nav-stick-height:67px}}
 </style>
 <!-- Brevo hosted subscription form: official stylesheet and local design overrides -->
 <link href="https://sibforms.com/forms/end-form/build/sib-styles.css" rel="stylesheet"/>
@@ -1558,5 +1565,25 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   var AUTOHIDE = Boolean(0);
 </script>
 <script defer="" src="https://sibforms.com/forms/end-form/build/main.js"></script>
+
+<script id="sticky-countdown-offsets">
+/* Banner may wrap onto multiple rows on phones; measure its real height so the
+   existing sticky navigation never covers the fixed-to-top countdown. */
+(()=>{
+  const banner=document.getElementById('campaignBanner');
+  const navRow=document.querySelector('.site-header .header-content');
+  if(!banner)return;
+  const sync=()=>{
+    document.documentElement.style.setProperty('--countdown-stick-height',Math.ceil(banner.getBoundingClientRect().height)+'px');
+    if(navRow)document.documentElement.style.setProperty('--nav-stick-height',Math.ceil(navRow.getBoundingClientRect().height)+'px');
+  };
+  sync();
+  if('ResizeObserver' in window){
+    const observer=new ResizeObserver(sync);
+    observer.observe(banner);
+    if(navRow)observer.observe(navRow);
+  }else window.addEventListener('resize',sync,{passive:true});
+})();
+</script>
 </body>
 </html>
